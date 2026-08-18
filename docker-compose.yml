@@ -269,6 +269,8 @@
         cpus: 1.0
         ports:
           - "9092:9092"
+        networks:
+          - default
         environment:
           KAFKA_NODE_ID: 1
           KAFKA_PROCESS_ROLES: broker,controller
