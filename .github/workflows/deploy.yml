@@ -1,0 +1,38 @@
+name: Deploy Backend to Azure VPS
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Azure VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Tải file cấu hình từ Git
+        uses: actions/checkout@v4
+
+      - name: 🚀 Đồng bộ file cấu hình sang VPS Azure
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "docker-compose.prod.yml,init-dbs.sql"
+          target: "~/airline-deploy"
+
+      - name: 🐳 Khởi động lại hệ thống Docker trên VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/airline-deploy
+            docker compose -f docker-compose.prod.yml up -d
