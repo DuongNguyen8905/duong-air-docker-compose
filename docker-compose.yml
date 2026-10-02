@@ -340,9 +340,6 @@
           JAVA_TOOL_OPTIONS: "-Xms128m -Xmx384m -XX:+UseG1GC"
 
 
-    
-
-
 
       airline-core-service:
         image: "080900005/yt-gds-airline:1.0.0"
